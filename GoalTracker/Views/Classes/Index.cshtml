@@ -1,0 +1,73 @@
+﻿@model IEnumerable<GoalTracker.Models.Class>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@if (ViewContext.HttpContext.User.IsInRole("Instructor"))
+{
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+}
+else if (ViewContext.HttpContext.User.IsInRole("Student"))
+{
+    <p>
+        @Html.ActionLink("Join Class", "JoinClass")
+    </p>
+}
+<table class="table">
+    <tr>
+
+        @if (ViewContext.HttpContext.User.IsInRole("Instructor"))
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.JoinId)
+            </th>
+        }
+        <th>
+            @Html.DisplayNameFor(model => model.ClassName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ClassDescription)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+
+            @if (ViewContext.HttpContext.User.IsInRole("Instructor"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.JoinId)
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.ClassName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClassDescription)
+            </td>
+
+            @if (ViewContext.HttpContext.User.IsInRole("Instructor"))
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new {id = item.ClassId}) |
+                    @Html.ActionLink("Details", "Details", new {id = item.ClassId}) |
+                    @Html.ActionLink("Class Home", "ClassHome", new {id = item.ClassId})
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.ActionLink("Class Home", "ClassHome", new { id = item.ClassId })
+                </td>
+            }
+        </tr>
+    }
+
+</table>

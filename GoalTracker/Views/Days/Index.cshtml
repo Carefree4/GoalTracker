@@ -1,0 +1,62 @@
+﻿@model IEnumerable<GoalTracker.Models.Day>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+@if (ViewContext.HttpContext.User.IsInRole("Instructor"))
+{
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DefaultGoal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsDayActive)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DefaultGoal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDayActive)
+            </td>
+            @if (ViewContext.HttpContext.User.IsInRole("Instructor"))
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.DayId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.DayId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.DayId })
+                </td>
+            }
+            else if (ViewContext.HttpContext.User.IsInRole("Student") && item.IsDayActive && DateTime.Now >= item.Date)
+            {
+                <td>
+                    @Html.ActionLink("Edit Goal", "Create", "Goals", new { DayId = item.DayId }, null)
+                </td>
+            }
+            else
+            {
+                <!--To keep the lines cleen-->
+                <td></td>
+            }
+        </tr>
+    }
+
+</table>

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<GoalTracker.Models.Goal>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.GoalText)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Accomplishment)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EffortScore)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProfessionalInteractionPoints)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.GoalText)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Accomplishment)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EffortScore)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProfessionalInteractionPoints)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.FormId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.FormId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.FormId })
+        </td>
+    </tr>
+}
+
+</table>

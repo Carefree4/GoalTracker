@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoalTracker", "GoalTracker\GoalTracker.csproj", "{8C2EF5FF-192F-47CC-B343-33E2D5208D8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoalTracker.Tests", "GoalTracker.Tests\GoalTracker.Tests.csproj", "{560B0876-AAB3-4840-9D6B-8CD5E6854FFE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{25D6B545-5C48-4FE3-B376-E7A8E65064FE}"
+	ProjectSection(SolutionItems) = preProject
+		Deploy\DeployToAppHarbor.sh = Deploy\DeployToAppHarbor.sh
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C2EF5FF-192F-47CC-B343-33E2D5208D8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C2EF5FF-192F-47CC-B343-33E2D5208D8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C2EF5FF-192F-47CC-B343-33E2D5208D8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C2EF5FF-192F-47CC-B343-33E2D5208D8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560B0876-AAB3-4840-9D6B-8CD5E6854FFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560B0876-AAB3-4840-9D6B-8CD5E6854FFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560B0876-AAB3-4840-9D6B-8CD5E6854FFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560B0876-AAB3-4840-9D6B-8CD5E6854FFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

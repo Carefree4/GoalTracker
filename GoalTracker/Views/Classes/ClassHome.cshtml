@@ -1,0 +1,61 @@
+﻿@model GoalTracker.Models.Class
+
+@{
+    ViewBag.Title = "ClassHome";
+}
+
+<h2>@Html.DisplayFor(model => model.ClassName) <small>@Html.DisplayFor(model => model.ClassDescription)</small></h2>
+<div>
+    <h4>
+        @foreach (var classInstructor in Model.ClassInstructors)
+        {
+            <a href="mailto:@Html.DisplayFor(itemModel => classInstructor.Email)">
+                @Html.DisplayFor(itemModel => classInstructor.Email)
+            </a>
+        }
+    </h4>
+    @if (ViewContext.HttpContext.User.IsInRole("Instructor"))
+    {
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i>D</i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        Class Days
+                    </div>
+                </div>
+            </div>
+            <a href="#">
+                <div class="panel-footer">
+                    <span class="pull-left">@Html.ActionLink("Edit Days", "Index", "Days", new { ClassId = Model.ClassId }, null)</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    }
+    else if (ViewContext.HttpContext.User.IsInRole("Student"))
+    {
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i>G</i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        Class Goals
+                    </div>
+                </div>
+            </div>
+            <a href="#">
+                <div class="panel-footer">
+                    <span class="pull-left">@Html.ActionLink("Edit Goals", "Index", "Days", new { ClassId = Model.ClassId }, null)</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
