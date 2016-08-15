@@ -7,11 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoalTracker", "GoalTracker\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoalTracker.Tests", "GoalTracker.Tests\GoalTracker.Tests.csproj", "{560B0876-AAB3-4840-9D6B-8CD5E6854FFE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{25D6B545-5C48-4FE3-B376-E7A8E65064FE}"
-	ProjectSection(SolutionItems) = preProject
-		Deploy\DeployToAppHarbor.sh = Deploy\DeployToAppHarbor.sh
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
