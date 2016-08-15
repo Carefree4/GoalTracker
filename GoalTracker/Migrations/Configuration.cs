@@ -28,6 +28,8 @@ namespace GoalTracker.Migrations
             {
                 var user = new ApplicationUser
                 {
+                    FirstName = "Max",
+                    LastName = "Wenger",
                     UserName = "maxdwenger@gmail.com",
                     Email = "maxdwenger@gmail.com",
                 };
@@ -41,6 +43,8 @@ namespace GoalTracker.Migrations
             {
                 var user = new ApplicationUser
                 {
+                    FirstName = "Teacher",
+                    LastName = "Doe",
                     UserName = "teacher@nsd.org",
                     Email = "teacher@nsd.org",
                 };
@@ -54,6 +58,8 @@ namespace GoalTracker.Migrations
             {
                 var user = new ApplicationUser
                 {
+                    FirstName = "Student",
+                    LastName = "Doe",
                     UserName = "student@nsd.org",
                     Email = "student@nsd.org",
                 };

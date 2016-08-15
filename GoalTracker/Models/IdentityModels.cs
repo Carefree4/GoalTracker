@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
@@ -20,6 +21,15 @@ namespace GoalTracker.Models
             ClassesInstructing = new List<Class>();
             Goals = new List<Goal>();
         }
+
+
+        
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
         [InverseProperty("ClassAttendees")]
         public virtual ICollection<Class> ClassesAttending { get; set; }

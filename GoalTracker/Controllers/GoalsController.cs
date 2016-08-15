@@ -19,27 +19,29 @@ namespace GoalTracker.Controllers
         public ActionResult Index(Guid? ClassId)
         {
 
-            if (ClassId != null)
-            {
-                Session["ClassId"] = (Guid)ClassId;
-            }
+            return RedirectToAction("Index", "Days");
 
-            if (Session["ClassId"] != null)
-            {
-                // Cannot use ClassId because its nullable and LINQ doesnt like that
-                Guid cId = (Guid)Session["ClassId"];
-                if (User.IsInRole("Instructor"))
-                {
-                    return View(db.Goals.Where(g => g.DayOfGoal.ClassAssigned.ClassId.Equals(cId)).ToList());
-                }
-                string userId = User.Identity.GetUserId();
-                return View(db.Goals.Where(
-                    g => g.DayOfGoal.ClassAssigned.ClassId.Equals(cId)
-                    && g.Student.Id.Equals(userId))
-                    .ToList());
-            }
-
-            return RedirectToAction("Index", "Classes");
+//            if (ClassId != null)
+//            {
+//                Session["ClassId"] = (Guid)ClassId;
+//            }
+//
+//            if (Session["ClassId"] != null)
+//            {
+//                // Cannot use ClassId because its nullable and LINQ doesnt like that
+//                Guid cId = (Guid)Session["ClassId"];
+//                if (User.IsInRole("Instructor"))
+//                {
+//                    return View(db.Goals.Where(g => g.DayOfGoal.ClassAssigned.ClassId.Equals(cId)).ToList());
+//                }
+//                string userId = User.Identity.GetUserId();
+//                return View(db.Goals.Where(
+//                    g => g.DayOfGoal.ClassAssigned.ClassId.Equals(cId)
+//                    && g.Student.Id.Equals(userId))
+//                    .ToList());
+//            }
+//
+//            return RedirectToAction("Index", "Classes");
         }
 
         // GET: Goals/Details/5
@@ -61,8 +63,19 @@ namespace GoalTracker.Controllers
         public ActionResult Create(Guid DayId)
         {
             Session["DayId"] = DayId;
+            
             var day = db.Days.FirstOrDefault(d => d.DayId.Equals(DayId));
-            var goal = new Goal { GoalText = day.DefaultGoal };
+            var userId = User.Identity.GetUserId();
+            var goal = db.Goals.FirstOrDefault(g => g.DayOfGoal.DayId.Equals(day.DayId) && g.Student.Id.Equals(userId));
+            if (goal == null)
+            {
+                goal = new Goal {GoalText = day.DefaultGoal};
+            }
+            else
+            {
+                return RedirectToAction("Edit", new { id = goal.FormId });
+            }
+
             return View(goal);
         }
 
@@ -73,34 +86,18 @@ namespace GoalTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "FormId,GoalText,Accomplishment,EffortScore")] Goal goal)
         {
-            if (Session["DayId"] != null)
-            {
-                var dayId = (Guid)Session["DayId"];
-                var userId = User.Identity.GetUserId();
+            if (!ModelState.IsValid) return View(goal);
+            if (Session["DayId"] == null) return View(goal);
 
-                if (db.Goals.Any(
-                    g => g.DayOfGoal.DayId.Equals(dayId)
-                    && g.Student.Id.Equals(userId))) {
+            var dayId = (Guid)Session["DayId"];
+            var userId = User.Identity.GetUserId();
 
-                    return RedirectToAction("Edit", 
-                        new { id = db.Goals.FirstOrDefault(
-                            g => g.DayOfGoal.DayId.Equals(dayId) 
-                            && g.Student.Id.Equals(userId)).FormId
-                        });
-                }
-
-                if (ModelState.IsValid)
-                {
-                    goal.FormId = Guid.NewGuid();
-                    goal.DayOfGoal = db.Days.FirstOrDefault(d => d.DayId.Equals(dayId));
-                    goal.Student = db.Users.FirstOrDefault(u => u.Id.Equals(userId));
-                    db.Goals.Add(goal);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-            }
-
-            return View(goal);
+            goal.FormId = Guid.NewGuid();
+            goal.DayOfGoal = db.Days.FirstOrDefault(d => d.DayId.Equals(dayId));
+            goal.Student = db.Users.FirstOrDefault(u => u.Id.Equals(userId));
+            db.Goals.Add(goal);
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Goals/Edit/5

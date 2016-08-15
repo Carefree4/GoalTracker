@@ -1,4 +1,5 @@
-﻿@model IEnumerable<GoalTracker.Models.Day>
+﻿@using Microsoft.AspNet.Identity
+@model IEnumerable<GoalTracker.Models.Day>
 
 @{
     ViewBag.Title = "Index";
@@ -27,7 +28,20 @@
 
     @foreach (var item in Model)
     {
-        <tr>
+        <tr class="alert  
+            @if (item.Date > DateTime.Now)
+            {
+                <text>alert-success</text>
+            }
+            else if (item.Date == DateTime.Today)
+            {
+                <text>alert-info</text>
+            }
+            else if(item.Date < DateTime.Now)
+            {
+                <text>alert-warning</text>
+            }
+            ">
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
@@ -45,11 +59,29 @@
                     @Html.ActionLink("Delete", "Delete", new { id = item.DayId })
                 </td>
             }
-            else if (ViewContext.HttpContext.User.IsInRole("Student") && item.IsDayActive && DateTime.Now >= item.Date)
+            else if (ViewContext.HttpContext.User.IsInRole("Student") && item.IsDayActive)
             {
-                <td>
-                    @Html.ActionLink("Edit Goal", "Create", "Goals", new { DayId = item.DayId }, null)
-                </td>
+                if (item.Date >= DateTime.Today)
+                {
+                    <td>
+                        <span class="glyphicon glyphicon-pencil"></span> 
+                        @Html.ActionLink("Edit Goal", "Create", "Goals", new {DayId = item.DayId}, null)
+                    </td>
+                }
+                else
+                {
+                    if (item.Goals.Any(g => g.DayOfGoal.DayId.Equals(item.DayId) && g.Student.Id.Equals(User.Identity.GetUserId())))
+                    {
+                        <td class="alert alert-success">
+                            <span class="glyphicon glyphicon-ok"></span> 
+                            @Html.ActionLink("View Goal", "Details", "Goals", new {DayId = item.DayId}, null)
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="alert alert-danger"><span class="glyphicon glyphicon-remove"></span> No Goal!</td>
+                    }
+                }
             }
             else
             {

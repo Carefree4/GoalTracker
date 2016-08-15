@@ -28,7 +28,7 @@ namespace GoalTracker.Controllers
                 var ret = db.Days
                     .Where(g => g.ClassAssigned.ClassId.Equals(cId))
                     .ToList();
-                return View(ret.OrderBy(d => d.Date));
+                return View(ret.OrderByDescending(d => d.Date));
             }
 
             return RedirectToAction("Index", "Classes");
