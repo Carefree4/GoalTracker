@@ -12,6 +12,7 @@ namespace GoalTracker.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(GoalTracker.Models.ApplicationDbContext context)
