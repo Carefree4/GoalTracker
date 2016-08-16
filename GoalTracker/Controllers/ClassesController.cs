@@ -26,7 +26,7 @@ namespace GoalTracker.Controllers
         public ActionResult Index()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
-         
+
             // Admins get to see all classes :)
             if (User.IsInRole("Admin"))
             {
@@ -58,7 +58,7 @@ namespace GoalTracker.Controllers
             if (result != null)
             {
                 var user = UserManager.FindById(User.Identity.GetUserId());
-                
+
                 user.ClassesAttending.Add(result);
                 Db.SaveChanges();
                 return RedirectToAction("Index");
@@ -83,7 +83,7 @@ namespace GoalTracker.Controllers
             }
             return View(@class);
         }
-        
+
         public ActionResult ClassHome(Guid? id)
         {
             if (id == null)
@@ -118,7 +118,7 @@ namespace GoalTracker.Controllers
                 @class.ClassId = Guid.NewGuid();
                 @class.JoinId = Class.NewJoinId();
                 @class.DefaultDaysOfWeek = Weekdays.WorkDays;
-                
+
                 var user = UserManager.FindById(User.Identity.GetUserId());
                 user.ClassesInstructing.Add(@class);
 
@@ -189,6 +189,26 @@ namespace GoalTracker.Controllers
             Db.Classes.Remove(@class);
             Db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public ActionResult ManageStudents(Guid id)
+        {
+            // If this goes big, this NEEDS to be fixed. Such bad code ;_;
+            ViewBag.ClassId = (Guid)id;
+            var students = Db.Users.Where(u => u.ClassesAttending.Any(c => c.ClassId.Equals(id)));
+            return View(students);
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public ActionResult KickStudentFromClass(Guid studentId, Guid classId)
+        {
+            var student = Db.Users.FirstOrDefault(u => u.Id.Equals(studentId.ToString()));
+            var classToRemove = Db.Classes.FirstOrDefault(c => c.ClassId.Equals(classId));
+            student.ClassesAttending.Remove(classToRemove);
+            Db.SaveChanges();
+
+            return RedirectToAction("ManageStudents", new { id = classId });
         }
 
         protected override void Dispose(bool disposing)

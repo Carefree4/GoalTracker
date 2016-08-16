@@ -70,5 +70,8 @@ namespace GoalTracker.Models
         public DbSet<Class> Classes { get; set; }
         public DbSet<Day> Days { get; set; }
         public DbSet<Goal> Goals { get; set; }
+
+        // The elusive line of code throwing errors everywhere BUT here
+        // public System.Data.Entity.DbSet<GoalTracker.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }
