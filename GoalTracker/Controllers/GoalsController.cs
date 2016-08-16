@@ -16,10 +16,18 @@ namespace GoalTracker.Controllers
 
 
         // GET: Goals
-        public ActionResult Index(Guid? ClassId)
+        [Authorize(Roles = "Instructor")]
+        public ActionResult Index(Guid ClassId, Guid StudentId)
         {
+            var @class = db.Classes.FirstOrDefault(c => c.ClassId.Equals(ClassId));
+            var student = db.Users.FirstOrDefault(s => s.Id.Equals(StudentId.ToString()));
 
-            return RedirectToAction("Index", "Days");
+            if (@class == null || student == null) {
+                return View();
+            }
+
+            var goals = db.Goals.Where(g => g.DayOfGoal.ClassAssigned.ClassId.Equals(@class.ClassId) && g.Student.Id.Equals(student.Id));
+            return View(goals.ToList());
 
 //            if (ClassId != null)
 //            {
@@ -93,11 +101,12 @@ namespace GoalTracker.Controllers
             var userId = User.Identity.GetUserId();
 
             goal.FormId = Guid.NewGuid();
-            goal.DayOfGoal = db.Days.FirstOrDefault(d => d.DayId.Equals(dayId));
+            var day = db.Days.FirstOrDefault(d => d.DayId.Equals(dayId));
+            goal.DayOfGoal = day;
             goal.Student = db.Users.FirstOrDefault(u => u.Id.Equals(userId));
             db.Goals.Add(goal);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Days");
         }
 
         // GET: Goals/Edit/5
@@ -126,7 +135,8 @@ namespace GoalTracker.Controllers
             {
                 db.Entry(goal).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Redirect(Request.UrlReferrer.ToString());
+                // return RedirectToAction("Index", "Days");
             }
             return View(goal);
         }

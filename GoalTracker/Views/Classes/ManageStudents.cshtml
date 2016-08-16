@@ -43,6 +43,7 @@
             @Html.DisplayFor(modelItem => item.UserName)
         </td>
         <td>
+            <span class="glyphicon glyphicon-list-alt"></span> @Html.ActionLink("View Goals", "Index", "Goals", new { ClassId = ViewBag.ClassId, StudentId = item.Id }, null) | 
             <span class="glyphicon glyphicon-remove-circle"></span> @Html.ActionLink("Kick Student", "KickStudentFromClass", new { classId=ViewBag.ClassId, studentId =item.Id })
         </td>
     </tr>
