@@ -16,6 +16,26 @@
     </h4>
     @if (ViewContext.HttpContext.User.IsInRole("Instructor"))
     {
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <h1><span class="label label-primary"><span class="glyphicon glyphicon-calendar"></span></span></h1>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        Reports
+                    </div>
+                </div>
+            </div>
+            <a href="#">
+                <div class="panel-footer">
+                    <span class="pull-left">@Html.ActionLink("Build Report", "Reports", new { ClassId = Model.ClassId }, null)</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <div class="row">

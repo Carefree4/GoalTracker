@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using GoalTracker.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data;
 
 namespace GoalTracker.Controllers
 {
@@ -210,6 +211,63 @@ namespace GoalTracker.Controllers
 
             return RedirectToAction("ManageStudents", new { id = classId });
         }
+
+        [Authorize(Roles = "Instructor")]
+        public ActionResult Report()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public ActionResult Report(Guid? ClassId)
+        {
+            var report = new ReportViewModel()
+            {
+                ReportedClass = Db.Classes.FirstOrDefault(c => c.ClassId.Equals(ClassId)),
+                StartDay = DateTime.Today,
+                EndDay = DateTime.Today
+            };
+            return View(@report);
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public ActionResult Report(ReportViewModel report)
+        {
+            var cd = new System.Net.Mime.ContentDisposition
+            {
+                FileName = report.ReportedClass.ClassName + "_" + report.StartDay + "-" + report.EndDay,
+                Inline = false,
+            };
+
+            return View();
+        }
+
+        private DataTable GetAllStudentGoals(ReportViewModel report) {
+            var Goals = Db.Goals.Where(g => 
+                                            g.DayOfGoal.Date >= report.StartDay 
+                                            && g.DayOfGoal.Date <= report.EndDay 
+                                            && g.DayOfGoal.ClassAssigned.ClassId.Equals(report.ReportedClass));
+
+            var data = new DataTable();
+            data.Columns.Add("Last Name", typeof(string));
+            data.Columns.Add("First Name", typeof(string));
+            data.Columns.Add("PIP Points", typeof(int));
+            data.Columns.Add("Effort Score", typeof(int));
+            data.Columns.Add("Total", typeof(int));
+
+            foreach (Goal g in Goals) {
+                data.Rows.Add(
+                    g.Student.LastName, 
+                    g.Student.FirstName, 
+                    g.ProfessionalInteractionPoints, 
+                    g.EffortScore, 
+                    g.ProfessionalInteractionPoints + g.EffortScore);
+            }
+
+            return data;
+        }
+
+
 
         protected override void Dispose(bool disposing)
         {
