@@ -7,6 +7,7 @@ using GoalTracker.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data;
+using System.IO;
 
 namespace GoalTracker.Controllers
 {
@@ -213,40 +214,48 @@ namespace GoalTracker.Controllers
         }
 
         [Authorize(Roles = "Instructor")]
-        public ActionResult Report()
-        {
-            return View();
-        }
-
-        [Authorize(Roles = "Instructor")]
         public ActionResult Report(Guid? ClassId)
         {
             var report = new ReportViewModel()
             {
-                ReportedClass = Db.Classes.FirstOrDefault(c => c.ClassId.Equals(ClassId)),
+                ReportedClassId = Db.Classes.FirstOrDefault(c => c.ClassId == ClassId).ClassId,
                 StartDay = DateTime.Today,
                 EndDay = DateTime.Today
             };
-            return View(@report);
+
+            if (report.ReportedClassId == null)
+            {
+                RedirectToAction("Index");
+            }
+
+            return View(report);
         }
 
+        [HttpPost]
         [Authorize(Roles = "Instructor")]
         public ActionResult Report(ReportViewModel report)
         {
-            var cd = new System.Net.Mime.ContentDisposition
-            {
-                FileName = report.ReportedClass.ClassName + "_" + report.StartDay + "-" + report.EndDay,
-                Inline = false,
-            };
+            var memoryStream = new MemoryStream();
+            var xlReportFile = new Models.GenerateGoalReport(GetAllStudentGoals(report)).GetReport();
 
-            return View();
+            var filename = report.StartDay + "-" + report.EndDay + ".xlsx";
+            var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            var fileStream = new MemoryStream();
+            xlReportFile.SaveAs(fileStream);
+            fileStream.Position = 0;
+
+            var fsr = new FileStreamResult(fileStream, contentType);
+            fsr.FileDownloadName = filename;
+
+            return fsr;
         }
 
         private DataTable GetAllStudentGoals(ReportViewModel report) {
             var Goals = Db.Goals.Where(g => 
                                             g.DayOfGoal.Date >= report.StartDay 
                                             && g.DayOfGoal.Date <= report.EndDay 
-                                            && g.DayOfGoal.ClassAssigned.ClassId.Equals(report.ReportedClass));
+                                            && g.DayOfGoal.ClassAssigned.ClassId.Equals(report.ReportedClassId)).ToList();
 
             var data = new DataTable();
             data.Columns.Add("Last Name", typeof(string));

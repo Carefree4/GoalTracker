@@ -34,7 +34,7 @@ namespace GoalTracker.Models
 
         private ExcelWorksheet LoadDataIntoWorkBook()
         {
-            WorkSheet.Cells["A1"].LoadFromDataTable(data, true);
+            WorkSheet.Cells["A1"].LoadFromDataTable(Data, true);
 
             return WorkSheet;
         }
