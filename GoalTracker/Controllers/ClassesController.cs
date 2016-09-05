@@ -235,12 +235,13 @@ namespace GoalTracker.Controllers
         [Authorize(Roles = "Instructor")]
         public ActionResult Report(ReportViewModel report)
         {
-            var memoryStream = new MemoryStream();
             var xlReportFile = new Models.GenerateGoalReport(GetAllStudentGoals(report)).GetReport();
 
+            // Prepare file
             var filename = report.StartDay + "-" + report.EndDay + ".xlsx";
             var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
+            // Create File Stream and set prefrences
             var fileStream = new MemoryStream();
             xlReportFile.SaveAs(fileStream);
             fileStream.Position = 0;
@@ -251,33 +252,6 @@ namespace GoalTracker.Controllers
             return fsr;
         }
 
-        private DataTable GetAllStudentGoals(ReportViewModel report) {
-            var Goals = Db.Goals.Where(g => 
-                                            g.DayOfGoal.Date >= report.StartDay 
-                                            && g.DayOfGoal.Date <= report.EndDay 
-                                            && g.DayOfGoal.ClassAssigned.ClassId.Equals(report.ReportedClassId)).ToList();
-
-            var data = new DataTable();
-            data.Columns.Add("Last Name", typeof(string));
-            data.Columns.Add("First Name", typeof(string));
-            data.Columns.Add("PIP Points", typeof(int));
-            data.Columns.Add("Effort Score", typeof(int));
-            data.Columns.Add("Total", typeof(int));
-
-            foreach (Goal g in Goals) {
-                data.Rows.Add(
-                    g.Student.LastName, 
-                    g.Student.FirstName, 
-                    g.ProfessionalInteractionPoints, 
-                    g.EffortScore, 
-                    g.ProfessionalInteractionPoints + g.EffortScore);
-            }
-
-            return data;
-        }
-
-
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -286,5 +260,76 @@ namespace GoalTracker.Controllers
             }
             base.Dispose(disposing);
         }
+
+        #region Helpers
+        private DataTable GetAllStudentGoals(ReportViewModel report)
+        {
+            // Get all goals for the class within the set date
+            var Goals = Db.Goals.Where(g =>
+                                            g.DayOfGoal.Date >= report.StartDay
+                                            && g.DayOfGoal.Date <= report.EndDay
+                                            && g.DayOfGoal.ClassAssigned.ClassId.Equals(report.ReportedClassId)).OrderBy(g => g.Student.Id).ToList();
+
+            var data = InitGoalDataTable();
+
+            // Add all the points togeather for each student and insert one
+            // row per student.
+            ReportedData lastGoal = null;
+            foreach (Goal g in Goals)
+            {
+                if (lastGoal == null)
+                {
+                    lastGoal = new ReportedData
+                    {
+                        Id = g.Student.Id,
+                        LastName = g.Student.LastName,
+                        FirstName = g.Student.FirstName,
+                        Email = g.Student.Email
+                    };
+                }
+
+                if (g.Student.Id.Equals(lastGoal.Id))
+                {
+                    lastGoal.ProfessionalInteractionPoints += g.ProfessionalInteractionPoints;
+                    lastGoal.EffortScore += g.EffortScore;
+                }
+                else
+                {
+                    NewGoalDataTableRow(data, lastGoal);
+                    lastGoal = null;
+                }
+            }
+
+            // G'D Fencepost
+            NewGoalDataTableRow(data, lastGoal);
+
+            return data;
+        }
+
+        private static void NewGoalDataTableRow(DataTable data, ReportedData lastGoal)
+        {
+            data.Rows.Add(
+                lastGoal.LastName,
+                lastGoal.FirstName,
+                lastGoal.Email,
+                lastGoal.ProfessionalInteractionPoints,
+                lastGoal.EffortScore,
+                lastGoal.TotalScore
+                );
+        }
+
+        private static DataTable InitGoalDataTable() {
+            var data = new DataTable();
+            data.Columns.Add("Last Name", typeof(string));
+            data.Columns.Add("First Name", typeof(string));
+            data.Columns.Add("Email", typeof(string));
+            data.Columns.Add("PIP Points", typeof(int));
+            data.Columns.Add("Effort Score", typeof(int));
+            data.Columns.Add("Total", typeof(int));
+
+            return data;
+        }
+        #endregion
+
     }
 }
